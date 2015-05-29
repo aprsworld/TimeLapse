@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Root Directory of Collected Image Snapshots
-home="/mnt/cam.aprsworld.com/"
+home="/mnt/cam.aprsworld.com"
 
 # Arguments
 output=${1}
@@ -170,49 +170,76 @@ if [ ${ts_beg_date} -eq ${ts_end_date} ]; then
 fi
 
 
-### Prepare symbolic links for video generation...
-### TODO: Ensure the camera and date directories exist?
-echo "Generating timelapse for ${camera} ${ts_beg}-${ts_end}."
+### Prepare symbolic link directory
+echo "Generating timelapse sequence for ${camera} ${ts_beg}-${ts_end}."
 IFS='
 '
-files=$(find "${home}/${camera}/" -type f -name '*.jpg' -print | sort)
 seq=0
 tmp_dir=$(mktemp -d /tmp/tl-gen.XXXXXXXXXX)
 if [ ! $? ] ; then
-	echo "Unable to create temporary direcroy! Aborting."
+	echo "Unable to create temporary directory.  Aborting!"
 	exit 0
 fi
-for file in ${files} ; do
-	ts=$(basename "${file}" | cut -d . -f 1)
-	ts_date=$(echo ${ts} | cut -d _ -f 1)
-	ts_time=$(echo ${ts} | cut -s -d _ -f 2)
-	if [ ${ts_date} -eq ${ts_beg_date} ]; then
-		if [ ${ts_time} -ge ${ts_beg_time} ]; then
-			ln -s "${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
-			seq=$((${seq}+1))
-		fi
-		if [ ${ts_date} -eq ${ts_end_date} ]; then
-			if [ ${ts_time} -gt ${ts_end_time} ]; then
-				break;
+trap 'rm -rf "$tmp_dir" ; exit 0' EXIT INT TERM HUP
+
+# Make a bunch of symbolic links
+date=${ts_beg_date}
+done=0
+while [ ${done} -eq 0 ] ; do
+	echo ${date}
+	date_year=$(echo ${date} | cut -c 1-4)
+	date_month=$(echo ${date} | cut -c 5-6)
+	date_day=$(echo ${date} | cut -c 7-8)
+	path="${home}/${camera}/${date_year}/${date_month}/${date_day}"
+	if [ ! -d "${path}" ] ; then
+		echo "Data for ${date} does not exist; truncating."
+		break;
+	fi
+	files=$(ls "${path}")
+	for file in ${files} ; do
+		ts=$(basename "${file}" | cut -d . -f 1)
+		ts_date=$(echo ${ts} | cut -d _ -f 1)
+		ts_time=$(echo ${ts} | cut -s -d _ -f 2)
+		if [ ${ts_date} -eq ${ts_beg_date} ]; then
+			if [ ${ts_time} -ge ${ts_beg_time} ]; then
+				ln -s "${path}/${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
+				seq=$((${seq}+1))
+			fi
+			if [ ${ts_date} -eq ${ts_end_date} ]; then
+				if [ ${ts_time} -gt ${ts_end_time} ]; then
+					done=1
+					break;
+				fi
 			fi
 		fi
-	fi
-	if [ ${ts_date} -gt ${ts_beg_date} ]; then
-		if [ ${ts_date} -gt ${ts_end_date} ]; then
-			break
-		fi
-		if [ ${ts_date} -eq ${ts_end_date} ]; then
-			if [ ${ts_time} -gt ${ts_end_time} ]; then
+		if [ ${ts_date} -gt ${ts_beg_date} ]; then
+			if [ ${ts_date} -gt ${ts_end_date} ]; then
+				done=1
 				break
 			fi
+			if [ ${ts_date} -eq ${ts_end_date} ]; then
+				if [ ${ts_time} -gt ${ts_end_time} ]; then
+					done=1
+					break
+				fi
+			fi
+			ln -s "${path}/${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
+			seq=$((${seq}+1))
 		fi
-		ln -s "${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
-		seq=$((${seq}+1))
-	fi
+		if [ ${seq} -eq 99999 ] ; then
+			echo "Duration of timelapse is too long; Truncating at ${ts}."
+			done=1
+			break
+		fi
+	done
+	# XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
+	date=$(date -d "${date} + 1 day" "+%Y%m%d")
 done
+
 
 ### G-Streamer Invocation
 #gst-launch-1.0 multifilesrc location="${tmp_dir}/%05d.jpg" index=0 caps="image/jpeg,framerate=24/1" ! jpegdec ! omxh264enc ! mp4mux faststart=TRUE faststart-file="${tmp_dir}/tmp.mp4" ! filesink location="${home}/${camera}/${date_year}/${date_month}/${date_day}/${camera}-${date_year}${date_month}${date_day} ${time_beg}-${time_end}.mp4"
 gst-launch-1.0 multifilesrc location="${tmp_dir}/%05d.jpg" index=0 caps="image/jpeg,framerate=24/1" ! jpegdec ! x264enc quantizer=20 ! mp4mux faststart=TRUE faststart-file="${tmp_dir}/tmp.mp4" ! filesink location="${output}"
+success=$?
 rm -rf "${tmp_dir}"
-exit 1
+exit ${success}

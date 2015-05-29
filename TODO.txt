@@ -1,7 +1,3 @@
-Allow for graceful aborting (trap command in script)
-Insure timespan does not overflow 5 digit decimal number
-Manually traverse directories instead of using find
---
 Video Dimension Scaling
 Insure time of images doesn't change mid-video
 Quality and Bitrate Settings
