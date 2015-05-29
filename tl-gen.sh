@@ -170,6 +170,13 @@ if [ ${ts_beg_date} -eq ${ts_end_date} ]; then
 fi
 
 
+### Validate Cam Dir Exists TODO (Better check)
+if [ ! -d "${home}/${camera}" ] ; then
+	echo "Camera directory ${camera} does not exist; aborting!"
+	exit 0
+fi
+
+
 ### Prepare symbolic link directory
 echo "Generating timelapse sequence for ${camera} ${ts_beg}-${ts_end}."
 IFS='
@@ -186,7 +193,6 @@ trap 'rm -rf "$tmp_dir" ; exit 0' EXIT INT TERM HUP
 date=${ts_beg_date}
 done=0
 while [ ${done} -eq 0 ] ; do
-	echo ${date}
 	date_year=$(echo ${date} | cut -c 1-4)
 	date_month=$(echo ${date} | cut -c 5-6)
 	date_day=$(echo ${date} | cut -c 7-8)
@@ -233,7 +239,7 @@ while [ ${done} -eq 0 ] ; do
 		fi
 	done
 	# XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
-	date=$(date -d "${date} + 1 day" "+%Y%m%d")
+	date=$(date -u -d "${date} + 1 day" "+%Y%m%d")
 done
 
 
