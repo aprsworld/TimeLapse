@@ -8,10 +8,14 @@ output=${1}
 camera=${2}
 ts_beg=${3}
 ts_end=${4}
+framerate=${5}
 
 output_syntax () {
-	echo "Syntax: tl-gen [output] [camera] [start_time] ([end_time])"
+	echo "Syntax: tl-gen [output] [camera] [start_time] ([end_time] ([framerate]))"
 	echo "        Where times are in the format [yyyymmdd_HHmmss]."
+	echo "        If [_HHmmss] is omitted 000000 is used."
+	echo "        If [end_time] is omitteded the current time is used."
+	echo "        If [framerate] is omitteded 30 is used."
 }
 
 ### Validate Arguments
@@ -33,6 +37,17 @@ fi
 # Optional Timestamp_End parameter (use current time if not present)
 if [ ! ${ts_end} ] ; then
 	ts_end=$(date -u "+%Y%m%d_%H%M%S")
+fi
+# Optional framerate parameter (use 30 if not present)
+if [ ! ${framerate} ] ; then
+	framerate=30
+fi
+if [ ${framerate} -ne 24 ] ; then
+	if [ ${framerate} -ne 30 ] ; then
+		if [ ! ${framerate} -ne 60 ] ; then
+			echo "It is highly recommended to use a framerate of 24, 30, or 60!"
+		fi
+	fi
 fi
 
 #
@@ -245,7 +260,7 @@ done
 
 ### G-Streamer Invocation
 #gst-launch-1.0 multifilesrc location="${tmp_dir}/%05d.jpg" index=0 caps="image/jpeg,framerate=24/1" ! jpegdec ! omxh264enc ! mp4mux faststart=TRUE faststart-file="${tmp_dir}/tmp.mp4" ! filesink location="${home}/${camera}/${date_year}/${date_month}/${date_day}/${camera}-${date_year}${date_month}${date_day} ${time_beg}-${time_end}.mp4"
-gst-launch-1.0 multifilesrc location="${tmp_dir}/%05d.jpg" index=0 caps="image/jpeg,framerate=24/1" ! jpegdec ! x264enc quantizer=20 ! mp4mux faststart=TRUE faststart-file="${tmp_dir}/tmp.mp4" ! filesink location="${output}"
+gst-launch-1.0 multifilesrc location="${tmp_dir}/%05d.jpg" index=0 caps="image/jpeg,framerate=${framerate}/1" ! jpegdec ! x264enc quantizer=20 ! mp4mux faststart=TRUE faststart-file="${tmp_dir}/tmp.mp4" ! filesink location="${output}"
 success=$?
 rm -rf "${tmp_dir}"
 exit ${success}
