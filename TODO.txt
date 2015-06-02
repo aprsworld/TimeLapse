@@ -1,5 +1,0 @@
-Video Dimension Scaling
-Insure time of images doesn't change mid-video
-Quality and Bitrate Settings
---
-Raspberry-Pi acceleration/compatibility
