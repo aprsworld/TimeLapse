@@ -44,7 +44,7 @@ if [ ! ${framerate} ] ; then
 fi
 if [ ${framerate} -ne 24 ] ; then
 	if [ ${framerate} -ne 30 ] ; then
-		if [ ! ${framerate} -ne 60 ] ; then
+		if [ ${framerate} -ne 60 ] ; then
 			echo "It is highly recommended to use a framerate of 24, 30, or 60!"
 		fi
 	fi
