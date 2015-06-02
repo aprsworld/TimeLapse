@@ -14,8 +14,8 @@ output_syntax () {
 	echo "Syntax: tl-gen [output] [camera] [start_time] ([end_time] ([framerate]))"
 	echo "        Where times are in the format [yyyymmdd_HHmmss]."
 	echo "        If [_HHmmss] is omitted 000000 is used."
-	echo "        If [end_time] is omitteded the current time is used."
-	echo "        If [framerate] is omitteded 30 is used."
+	echo "        If [end_time] is omitted the current time is used."
+	echo "        If [framerate] is omitted 30 is used."
 }
 
 ### Validate Arguments
