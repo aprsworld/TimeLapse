@@ -42,6 +42,16 @@ fi
 if [ ! ${framerate} ] ; then
 	framerate=30
 fi
+if ! expr ${framerate} : '[0-9][0-9]*$' > /dev/null ; then
+	echo "You must specify a valid integer framerate!"
+	output_syntax
+	exit 0
+fi
+if [ ! ${framerate} -gt 0 ]; then
+	echo "You must specify a positive framerate!"
+	output_syntax
+	exit 0
+fi
 if [ ${framerate} -ne 24 ] ; then
 	if [ ${framerate} -ne 30 ] ; then
 		if [ ${framerate} -ne 60 ] ; then
@@ -62,6 +72,12 @@ timestamp_validate () {
 	fi
 	if [ ! ${time} ]; then
 		time="000000"
+	fi
+	if ! expr ${date} : '[0-9][0-9]*$' > /dev/null ; then
+		return 0
+	fi
+	if ! expr ${time} : '[0-9][0-9]*$' > /dev/null ; then
+		return 0
 	fi
 
 	### Validate Date
