@@ -1,4 +1,8 @@
 #!/bin/sh
+### tl-gen.sh - Back-end timelapse generation script.
+### Copyright (C) APRS World, LLC. 2015
+### ALL RIGHTS RESERVED!
+### Author: david@aprsworld.com
 
 # Root Directory of Collected Image Snapshots
 home="/mnt/cam.aprsworld.com"
