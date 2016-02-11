@@ -257,7 +257,9 @@ while [ ${done} -eq 0 ] ; do
 	path="${home}/${camera}/${date_year}/${date_month}/${date_day}"
 	if [ ! -d "${path}" ] ; then
 		echo "Data for ${date} does not exist; truncating."
-		break;
+		# XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
+		date=$(date -u -d "${date} + 1 day" "+%Y%m%d")
+		continue
 	fi
 	files=$(ls "${path}")
 	for file in ${files} ; do
