@@ -21,7 +21,7 @@ output_syntax () {
 	echo "        If [_HHmmss] is omitted 000000 is used."
 	echo "        If [end_time] is omitted the current time is used."
 	echo "        If [framerate] is omitted 30 is used."
-	echo "        If [frametime] is omittied 60 is used."
+	echo "        If [frametime] is omittied 50 is used."
 }
 
 ### Validate Arguments
@@ -68,9 +68,9 @@ fi
 
 # Optional frametime parameter (defaults to 60)
 if [ ! ${frametime} ]; then
-	frametime=60
+	frametime=50
 fi
-if ! expr ${framerate} : '[0-9][0-9]*$' > /dev/null ; then
+if ! expr ${frametime} : '[0-9][0-9]*$' > /dev/null ; then
 	echo "You must specify a valid integer frametime!"
 	output_syntax
 	exit 0
@@ -245,59 +245,46 @@ trap 'rm -rf "$tmp_dir" ; exit 0' EXIT INT TERM HUP
 # Make a bunch of symbolic links
 date=${ts_beg_date}
 time=${ts_beg_time}
-done=0
-while [ ${done} -eq 0 ] ; do
-	if [ ${date} -gt ${ts_end_date} ]; then
-		done=1
-		break
+path="${home}/${camera}"
+files=$(find "${path}" -name '????????_??????.jpg' | sort)
+IFS='
+'
+for file in ${files} ; do
+	ts=$(basename "${file}" | cut -d . -f 1)
+	ts_date=$(echo ${ts} | cut -d _ -f 1)
+	ts_time=$(echo ${ts} | cut -s -d _ -f 2)
+	if [ ${ts_date} -lt ${date} ]; then
+		continue;
 	fi
-	date_year=$(echo ${date} | cut -c 1-4)
-	date_month=$(echo ${date} | cut -c 5-6)
-	date_day=$(echo ${date} | cut -c 7-8)
-	path="${home}/${camera}/${date_year}/${date_month}/${date_day}"
-	if [ ! -d "${path}" ] ; then
-		echo "Data for ${date} does not exist; truncating."
-		# XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
-		date=$(date -u -d "${date} + 1 day" "+%Y%m%d")
-		continue
+	if [ ${ts_date} -eq ${date} ]; then
+		if [ 1${ts_time} -lt 1${time} ]; then
+			echo "1{$ts_time} -lt 1${time}"
+			continue;
+		fi
 	fi
-	files=$(ls "${path}")
-	for file in ${files} ; do
-		ts=$(basename "${file}" | cut -d . -f 1)
-		ts_date=$(echo ${ts} | cut -d _ -f 1)
-		if [ ${ts_date} -ne ${date} ]; then
-			echo "Found an image for ${ts_date} in ${date} directory."
-			continue
+	if [ ${ts_date} -gt ${ts_end_date} ]; then
+		echo "DONE"
+		break;
+	fi
+	if [ ${ts_date} -eq ${ts_end_date} ]; then
+		if [ 1${ts_time} -gt 1${ts_end_time} ]; then
+			echo "DONE2"
+			break;
 		fi
-		ts_time=$(echo ${ts} | cut -s -d _ -f 2)
-		if [ ${date} -eq ${ts_end_date} ]; then
-			if [ ${ts_time} -gt ${ts_end_time} ]; then
-				done=1
-				break;
-			fi
+	fi
+		ln -s "${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
+		seq=$((${seq}+1))
+		if [ ${seq} -eq 99999 ] ; then
+			echo "Duration of timelapse is too long; Truncating at ${ts}."
+			break
 		fi
-		if [ ${ts_time} -ge ${time} ]; then
-			ln -s "${path}/${file}" "${tmp_dir}/$(printf %05d ${seq}).jpg"
-			seq=$((${seq}+1))
-			if [ ${seq} -eq 99999 ] ; then
-				echo "Duration of timelapse is too long; Truncating at ${ts}."
-				done=1
-				break
-			fi
-			time_hour=$(echo ${time} | cut -c 1-2)
-			time_min=$(echo ${time} | cut -c 3-4)
-			time_secs=$(echo ${time} | cut -c 5-6)
-			### XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
-			ts_next=$(date -u -d "${date} ${time_hour}:${time_min}:${time_secs} UTC + ${frametime} seconds" "+%Y%m%d_%H%M%S")
-			new_date=$(echo ${ts_next} | cut -d _ -f 1)
-			time=$(echo ${ts_next} | cut -d _ -f 2)
-			if [ ${new_date} -ne ${date} ]; then
-				break;
-			fi
-		fi
-	done
-	# XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
-	date=$(date -u -d "${date} + 1 day" "+%Y%m%d")
+		time_hour=$(echo ${ts_time} | cut -c 1-2)
+		time_min=$(echo ${ts_time} | cut -c 3-4)
+		time_secs=$(echo ${ts_time} | cut -c 5-6)
+		### XXX: THIS IS NOT POSIX COMPLIANT - RELIANT ON GNUism
+		ts_next=$(date -u -d "${ts_date} ${time_hour}:${time_min}:${time_secs} UTC + ${frametime} seconds" "+%Y%m%d_%H%M%S")
+		date=$(echo ${ts_next} | cut -d _ -f 1)
+		time=$(echo ${ts_next} | cut -d _ -f 2)
 done
 
 
