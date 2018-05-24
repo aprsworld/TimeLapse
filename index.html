@@ -60,6 +60,25 @@ button {
 	font-weight: bold;
 }
 		</style>
+	<style>
+
+.ui-datepicker td span,
+.ui-datepicker td a {
+	padding-bottom: 1.25em;
+}
+.ui-datepicker td[title]::after {
+	content: attr(title);
+	display: block;
+	position: relative;
+	font-size: .6em;
+	margin-top: -2.5em;
+	height: 2.5em;
+	text-align: left;
+	margin-left: .25em;
+	width: 4em;
+	color: #00F;
+}
+	</style>
 	</head>
 
 
@@ -504,13 +523,40 @@ function formSectionDisable(section,value) {
 
 <script>
 $( function() {
-	var dateFormat = "mm/dd/yy",
-	startDate = $("#video_start_date")
+	var frameCounts = [0,20,30,40,50,7,70,80,90,10000,10,20,30,40,50,60,70,80,90,100,10,20,30,40,50,60,70,80,90,100,10];
+
+
+	var dateFormat = "mm/dd/yy";
+	var dateStart = new Date();
+	dateStart.setDate(1);
+	var $startDate = $("#video_start_date")
 		.datepicker({
 			defaultDate: "-1m",
 			changeMonth: true,
-			numberOfMonths: 2
+			numberOfMonths: 2,
+			maxDate: "+0d",
+			beforeShowDay: function(date) {
+				var selectable = true;
+				var classname = "";
+				var title = "";
+				if (date.getMonth() == dateStart.getMonth()) {
+					title = "" + frameCounts[date.getDate() - 1] + " images";
+					if (date.getDate() > new Date().getDate()) {
+						title = "";
+					}
+				}
+				return [selectable, classname, title];
+			}
+		}),
+	$stopDate = $("#video_stop_date")
+		.datepicker({
+			defaultDate: "-1m",
+			changeMonth: true,
+			numberOfMonths: 2,
+			maxDate: "+0d"
 		});
+	$startDate.datepicker("setDate", dateStart);
+	$stopDate.datepicker("setDate", "+0d");
 });
 </script>
 
@@ -554,6 +600,20 @@ $( function() {
 				<label for="eth0_nameserver_secondary">Secondary DNS<span class="pure-form-message-inline">(optional)</span></label>
 				<input name="eth0_nameserver_secondary" id="eth0_nameserver_secondary" type="text" />
 				<span class="pure-form-message-inline">Consider using <a href="https://developers.google.com/speed/public-dns/">Google Public DNS <i class="fa fa-external-link" aria-hidden="true"></i></a> server <i>8.8.4.4</i>.</span>
+			</div>
+		</div>
+
+		<div id="video_date_stop">
+			<hr />
+
+			<div class="pure-control-group">
+				<label for="video_stop_date">Stop Date</label>
+				<input name="video_stop_date" id="video_stop_date" type="text" />
+			</div>
+
+			<div class="pure-control-group">
+				<label for="video_stop_time">Stop Time</label>
+				<input name="video_stop_time" id="video_stop_time" type="text" />
 			</div>
 		</div>
 	</fieldset>
