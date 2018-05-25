@@ -595,12 +595,6 @@ $( function() {
 				<label for="video_start_time">Start Time</label>
 				<input name="video_start_time" id="video_start_time" type="text" />
 			</div>
-	
-			<div class="pure-control-group">
-				<label for="eth0_nameserver_secondary">Secondary DNS<span class="pure-form-message-inline">(optional)</span></label>
-				<input name="eth0_nameserver_secondary" id="eth0_nameserver_secondary" type="text" />
-				<span class="pure-form-message-inline">Consider using <a href="https://developers.google.com/speed/public-dns/">Google Public DNS <i class="fa fa-external-link" aria-hidden="true"></i></a> server <i>8.8.4.4</i>.</span>
-			</div>
 		</div>
 
 		<div id="video_date_stop">
@@ -616,19 +610,19 @@ $( function() {
 				<input name="video_stop_time" id="video_stop_time" type="text" />
 			</div>
 		</div>
-	</fieldset>
+<!--	</fieldset>
 
-	<fieldset>
-		<legend style="font-size: 2em; font-weight: bold;"><i class="fa fa-upload" aria-hidden="true"></i> Actions</legend>
+	<fieldset> -->
+		<hr />
+
 		<div class="pure-controls">
-			<input type="hidden" name="action[]" value="save" />
-			<input type="hidden" name="action[]" value="reboot" />
-			<button type="submit" class="pure-button pure-button-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i>  Save Changes and Reboot</button>
-			<span class="pure-form-message-inline">Click the "Save Changes and Reboot" button to apply your changes.</span>
+			<input type="hidden" name="generate" value="generate" />
+			<button type="submit" class="pure-button pure-button-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> Generate Video</button>
+			<span class="pure-form-message-inline">Click the "Generate Video" button to generate a time-lapse video based on the settings above.</span>
 		</div>
 		<div class="pure-controls">
-			<button type="button" class="pure-button pure-button-primary button-revert"><i class="fa fa-undo" aria-hidden="true"></i>  Revert</button>
-			<span class="pure-form-message-inline">Click the "Revert" button to reload the current settings from the device.</span>
+			<button type="button" class="pure-button pure-button-primary button-revert"><i class="fa fa-undop" aria-hidden="true"></i> Revert</button>
+			<span class="pure-form-message-inline">Click the "Revert" button to reload the default settings for time-lapse video generation.</span>
 		</div>
 	</fieldset>
 </form>
