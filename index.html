@@ -580,11 +580,27 @@ $( function() {
 			<label for="video_format_mp4" class="pure-radio"><input id="video_format_mp4" type="radio" name="video_format" value="mp4" /> MP4</label>
 			<br />
 			<span class="pure-form-message-inline">MJPEG is the recommended video format.  If your browser or system does not support MJPEG you can also select the MP4 video format.</span>
+
+			<br />
+			<label for="video_framerate">Video Framerate</label>
+			<input name="video_framerate" id="video_frame_rate" type="text" />
+			<br />
+			<span class="pure-form-message-inline">The framerate is in frames per second.  The default of 30.</span>
+
+			<br />
+			<label for="video_framespan">Video Frame Span</label>
+			<input name="video_framespan" id="video_frame_span" type="text" />
+			<br />
+			<span class="pure-form-message-inline">The frame span is the amount of real seconds that should elapse per frame.  The default is 60.</span>
 		</div>
 
 
 		<div id="video_date_start">
-			<hr />
+			<hr clear="both" />
+
+			<div class="image" style="float: right; padding-bottom: .6em;">
+				<img height="240" width="320" border="1" />
+			</div>
 
 			<div class="pure-control-group">
 				<label for="video_start_date">Start Date</label>
@@ -598,7 +614,11 @@ $( function() {
 		</div>
 
 		<div id="video_date_stop">
-			<hr />
+			<hr style="clear: both;" />
+
+			<div class="image" style="float: right; padding-bottom: .6em;">
+				<img height="240" width="320" border="1" />
+			</div>
 
 			<div class="pure-control-group">
 				<label for="video_stop_date">Stop Date</label>
@@ -613,7 +633,7 @@ $( function() {
 <!--	</fieldset>
 
 	<fieldset> -->
-		<hr />
+		<hr style="clear: both;" />
 
 		<div class="pure-controls">
 			<input type="hidden" name="generate" value="generate" />
