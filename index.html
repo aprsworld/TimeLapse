@@ -533,7 +533,6 @@ $( function() {
 	dateStart.setDate(1);
 	var $startDate = $("#video_start_date")
 		.datepicker({
-			defaultDate: "-1m",
 			changeMonth: true,
 			numberOfMonths: 2,
 			maxDate: "+0d",
@@ -542,7 +541,7 @@ $( function() {
 				var classname = "";
 				var title = "";
 				var today = new Date();
-				if (date.getFullYear() == today.getFullYear && date.getMonth() >= today.getMonth() && date.getDate() > today.getDate()) {
+				if (date.getFullYear() == today.getFullYear() && date.getMonth() >= today.getMonth() && date.getDate() > today.getDate()) {
 					return [selectable, classname, title];
 				}
 				var month = "" + date.getFullYear() + "-" + pad_zero(2, "" + (date.getMonth() + 1));
@@ -555,37 +554,37 @@ $( function() {
 			onChangeMonthYear: function(year, month, obj) {
 				function cal_update(data) {
 					cal[data.date] = data.images;
+					$startDate.datepicker("refresh");
 				};
 
-				var date = month_printable(year, month);
-				if (!cal[date]) {
-				$.ajax({
-					url:	"getImageCount.php",
-					dataType: "json",
-					data:	{
-						"camera": camera,
-						"date":  date
+				for (var i = -1; i <= 1; i++) {
+					var y = year;
+					var m = month + i;
+					if (m > 12) {
+						y = y++;
+						m = m - 12;
+					} else if (m < 1) {
+						y = y--;
+						m = 12 - m;
 					}
-				}).done(cal_update);
+					var date = month_printable(y, m);
+					if (!cal[date]) {
+						$.ajax({
+							url:	"getImageCount.php",
+							dataType: "json",
+							data:	{
+								"camera": camera,
+								"date":  date
+							}
+						}).done(cal_update);
+					}
 				}
-	
-				date = month_printable(year, month-1);
-				if (!cal[date]) {
-					$.ajax({
-						url:	"getImageCount.php",
-						dataType: "json",
-						data: {
-							"camera": camera,
-							"date": month_printable(year, month-1)
-						}
-					}).done(cal_update);
-				}
+
 				return true;
 			}
 		}),
 	$stopDate = $("#video_stop_date")
 		.datepicker({
-			defaultDate: "-1m",
 			changeMonth: true,
 			numberOfMonths: 2,
 			maxDate: "+0d"
