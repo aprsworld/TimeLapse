@@ -524,7 +524,6 @@ function formSectionDisable(section,value) {
 <script>
 $( function() {
 	var camera = "A4872";
-	var frameCounts = [0,20,30,40,50,7,70,80,90,10000,10,20,30,40,50,60,70,80,90,100,10,20,30,40,50,60,70,80,90,100,10];
 
 	var cal = {};
 
@@ -533,6 +532,7 @@ $( function() {
 	dateStart.setDate(1);
 	var $startDate = $("#video_start_date")
 		.datepicker({
+			changeYear: true,
 			changeMonth: true,
 			numberOfMonths: 2,
 			maxDate: "+0d",
@@ -553,6 +553,7 @@ $( function() {
 			},
 			onChangeMonthYear: function(year, month, obj) {
 				function cal_update(data) {
+					alert(JSON.stringify(this));
 					cal[data.date] = data.images;
 					$startDate.datepicker("refresh");
 				};
@@ -570,7 +571,8 @@ $( function() {
 					var date = month_printable(y, m);
 					if (!cal[date]) {
 						$.ajax({
-							url:	"getImageCount.php",
+							context: date,
+							url: "getImageCount.php",
 							dataType: "json",
 							data:	{
 								"camera": camera,
@@ -578,6 +580,7 @@ $( function() {
 							}
 						}).done(cal_update);
 					}
+					alert(date);
 				}
 
 				return true;
