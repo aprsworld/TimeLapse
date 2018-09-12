@@ -30,7 +30,7 @@
 	$dir = dir($dir_s . $date[0] . '/' . $date[1]);
 	if ($dir) {
 		while ($day = $dir->read()) {
-			if ($day > 0 && $day < $num_days) {
+			if ($day > 0 && $day <= $num_days) {
 				// Constants
 				$dir_day = dir($dir_root . '/' . $camera . '/' . $date[0] . '/' . $date[1] . '/' . $day);
 				// Values
