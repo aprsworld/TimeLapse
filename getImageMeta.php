@@ -5,6 +5,7 @@
 	// Headers
 	// header('Content-Type:	application/json');  // IE6 dies horribly with this...
 	header('Content-Type:	text/plain');
+	// TODO: Cache considerations...
 
 	// Inputs
 	$camera = $_REQUEST['camera'];
@@ -65,5 +66,5 @@
 	ksort($struct);
 
 	// Return Results
-	echo json_encode($struct, JSON_PRETTY_PRINT);
+	echo json_encode(Array('camera' => $camera, 'date' => $date_s, 'data' => $struct), JSON_PRETTY_PRINT);
 ?>
