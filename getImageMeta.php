@@ -2,6 +2,10 @@
 	error_reporting(0);
 	$dir_root = '/mnt/cam.aprsworld.com'; // TODO: Use relative dir
 
+	// Headers
+	// header('Content-Type:	application/json');  // IE6 dies horribly with this...
+	header('Content-Type:	text/plain');
+
 	// Inputs
 	$camera = $_REQUEST['camera'];
 	$date_s = $_REQUEST['date'];
@@ -12,8 +16,9 @@
 	$num_days = cal_days_in_month(CAL_GREGORIAN, $date[1], $date[0]);
 
 	// Sanity
-	if (!$num_days || !is_dir($dir_s) || fileperms($dir_s) & 0004 != 0004) {
+	if (!$camera || !$num_days || !is_dir($dir_s) || fileperms($dir_s) & 0004 != 0004) {
 		echo '{ "error": "Invalid Parameters" }';
+		return 0;
 	}
 
 	// Values
@@ -40,6 +45,7 @@
 							$images_num++;
 						}
 					}
+					sort($images);
 					$dir_day->close();
 				}
 
@@ -52,11 +58,12 @@
 			}
 		}
 		$dir->close();
-
-		// Update Return Structure
-		$struct[$date_s] = Array('count' => $images_total);
 	}
 
+	// Update Return Structure
+	$struct[$date_s] = Array('count' => $images_total);
+	ksort($struct);
+
 	// Return Results
-	echo json_encode($struct);
+	echo json_encode($struct, JSON_PRETTY_PRINT);
 ?>
