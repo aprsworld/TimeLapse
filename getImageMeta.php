@@ -1,6 +1,6 @@
 <?php
 	error_reporting(0);
-	$dir_root = '/home/jjeffers/cam.aprsworld.com'; // TODO: Use relative dir
+	$dir_root = '/mnt/cam.aprsworld.com'; // TODO: Use relative dir
 
 	// Inputs
 	$camera = $_REQUEST['camera'];
