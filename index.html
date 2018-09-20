@@ -524,40 +524,51 @@ function formSectionDisable(section,value) {
 <script>
 $( function() {
 	var camera = "A4872";
-
 	var cal = {};
 
-	var dateFormat = "mm/dd/yy";
 	var dateStart = new Date();
 	dateStart.setDate(1);
 	var $startDate = $("#video_start_date")
 		.datepicker({
+			dateFormat: "yy-mm-dd",
 			changeYear: true,
 			changeMonth: true,
-			numberOfMonths: 2,
 			maxDate: "+0d",
 			beforeShowDay: function(date) {
-				var selectable = true;
+				var selectable = false;
 				var classname = "";
 				var title = "";
 				var today = new Date();
-				if (date.getFullYear() == today.getFullYear() && date.getMonth() >= today.getMonth() && date.getDate() > today.getDate()) {
+				if (date.getFullYear() > today.getFullYear()) {
 					return [selectable, classname, title];
+				} else if (date.getFullYear() == today.getFullYear()) {
+					if (date.getMonth() > today.getMonth()) {
+						return [selectable, classname, title];
+					}
+					if (date.getMonth() == today.getMonth()) {
+						if (date.getDate() > today.getDate()) {
+							return [selectable, classname, title];
+						}
+					}
 				}
-				var month = "" + date.getFullYear() + "-" + pad_zero(2, "" + (date.getMonth() + 1));
-				var images = cal[month];
-				if (images) {
-					title = "" + images[date.getDate() - 1] + " images";
+				selectable = true;
+				var month = month_printable(date.getFullYear(), date.getMonth() + 1);
+				var day = month + "-" + pad_zero(2, "" + date.getDate());
+				if (cal[day]) {
+					title = "" + cal[day].count + " images";
 				}
 				return [selectable, classname, title];
 			},
 			onChangeMonthYear: function(year, month, obj) {
 				function cal_update(data) {
-					alert(JSON.stringify(this));
-					cal[data.date] = data.images;
+					if (data.error || !data.data) {
+						return;
+					}
+					$.extend(cal, data.data);
 					$startDate.datepicker("refresh");
 				};
 
+				// Ugly hack to update all calendar sheets visible
 				for (var i = -1; i <= 1; i++) {
 					var y = year;
 					var m = month + i;
@@ -572,7 +583,7 @@ $( function() {
 					if (!cal[date]) {
 						$.ajax({
 							context: date,
-							url: "getImageCount.php",
+							url: "getImageMeta.php",
 							dataType: "json",
 							data:	{
 								"camera": camera,
@@ -580,7 +591,6 @@ $( function() {
 							}
 						}).done(cal_update);
 					}
-					alert(date);
 				}
 
 				return true;
@@ -593,7 +603,7 @@ $( function() {
 			maxDate: "+0d"
 		});
 	$startDate.datepicker("setDate", dateStart);
-	$stopDate.datepicker("setDate", "+0d");
+	$stopDate.datepicker("setDate", new Date());
 
 
 	function pad_zero(size, s) {
