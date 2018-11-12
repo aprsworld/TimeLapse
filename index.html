@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>TimeLapse Generation</title>
+
+		<!-- jquery-ui CSS -->
+		<link rel="stylesheet" href="res/jquery-ui-1.12.1/jquery-ui.min.css" />
+
+		<!-- purecss simple css -->
+		<link rel="stylesheet" href="res/pure/pure-min.css" />
+		<link rel="stylesheet" href="res/pure/grids-responsive-min.css" />
+
+		<!-- FormValidation CSS file -->
+		<link rel="stylesheet" href="res/formvalidation/css/formValidation.min.css" />
+
+		<!-- jquery -->
+		<script type="text/javascript" src="res/jquery/jquery-3.2.1.min.js"></script>
+
+		<!-- jquery-ui -->
+		<script type="text/javascript" src="res/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+
+		<!-- formValidation plugin and the class supports validating Pure form -->
+		<script type="text/javascript" src="res/formvalidation/js/formValidation.min.js"></script>
+		<script type="text/javascript" src="res/formvalidation/js/framework/pure.min.js"></script>
+
+		<!-- FontAwesome for icons and spinners -->
+		<link rel="stylesheet" href="res/font-awesome-4.7.0/css/font-awesome.min.css" />
+
+
+
+		<!-- Page Stylesheet -->
+		<style type="text/css">
+.right {
+	text-align:		right;
+}
+
+.debug {
+	/* turned on with a URL parameter of debug=1 */
+	color:			red;
+}
+
+.edit {
+	/* turned on with a URL parameter of edit=1 or by clicking edit button */
+	visibility:		none;
+}
+
+button {
+	margin:			10px;
+}
+
+/* purecss border and padding */
+.pure-g > div {
+	-webkit-box-sizing:	border-box;
+	-moz-box-sizing:	border-box;
+	box-sizing:		border-box;
+}
+.l-box {
+	padding:		1em;
+}
+.pure-control-group {
+	font-weight:		bold;
+}
+
+/* jquery datepicker TODO XXX */
+.ui-datepicker td span,
+.ui-datepicker td a {
+	padding-bottom:		1.25em;
+}
+.ui-datepicker td[title]::after {
+	content:		attr(title);
+	display:		block;
+	position:		relative;
+	font-size:		0.6em;
+	margin-top:		-2.5em;
+	height:			2.5em;
+	text-align:		left;
+	margin-left:		.25em;
+	width:			4em;
+	color:			#00F;
+}
+		</style>
+
+<script type="text/javascript">
+$( function() {
+var camera =" A4872";
+var cal = {};
+
+function pad_zero(size, s) {
+	while (s.length < (size || 2)) { s = "0" + s; };
+	return s;
+}
+
+function month_printable(year, month) {
+	return "" + year + "-" + pad_zero(2, "" + month);
+}
+
+function onChangeMonthYear(year, month, obj) {
+	var $cal = $(obj);
+	var date = month_printable(year, month);
+	if (!cal[date]) {
+		$.ajax({
+			context: date,
+			url: "getImageMeta.php",
+			dataType: "json",
+			data: {
+				"camera": camera,
+				"date": date
+			}
+		}).done(function(data) {
+			if (data.error || !data.data) {
+				return;
+			}
+			$.extend(cal, data.data);
+			$cal.datepicker("refresh");
+		});
+	}
+}
+
+function beforeShowDay (date) {
+	var selectable = false;
+	var classname = "";
+	var title = "";
+	var today = new Date();
+
+	// Past todays date?
+	if (date.getFullYear() > today.getFullYear()) {
+		return [selectable, classname, title];
+	} else if (date.getFullYear() == today.getFullYear()) {
+		if (date.getMonth() > today.getMonth()) {
+			return [selectable, classname, title];
+		}
+		if (date.getMonth() == today.getMonth()) {
+			if (date.getDate() > today.getDate()) {
+				return [selectable, classname, title];
+			}
+		}
+	}
+
+	// Get Image counts
+	selectable = true;
+	var month = month_printable(date.getFullYear(), date.getMonth() + 1);
+	var day = month + "-" + pad_zero(2, "" + date.getDate());
+	if (cal[day]) {
+		title = "" + cal[day].count + " images";
+	}
+
+	// Return values
+	return [selectable, classname, title];
+}
+
+var dateStart = new Date();
+dateStart.setDate(1);
+$('#video_start_date').datepicker({
+	dateFormat: "mm-dd-yy",
+	changeYear: true,
+	changeMonth: true,
+	maxDate: "+0d",
+	onChangeMonthYear: onChangeMonthYear,
+	beforeShowDay: beforeShowDay
+}).datepicker("setDate", dateStart);;
+$('#video_end_date').datepicker({
+	dateFormat: 'mm-dd-yy',
+	changeYear: true,
+	changeMonth: true,
+	maxDate: "+0d",
+	onChangeMonthYear: onChangeMonthYear,
+	beforeShowDay: beforeShowDay
+}).datepicker("setDate",new Date());;
+
+// form validator hook
+$('#timelapseGenerator').formValidation({
+	framework: 'pure',
+
+	icon: {
+		valid:		'fa fa-check',
+		invalid:	'fa fa-times',
+		validating:	'fa fa-refresh'
+	},
+
+	fields: {
+		video_start_date: {
+			validators: {
+				notEmpty: {
+					message:	'Date is required.'
+				},
+				date: {
+					format:		'MM-DD-YYYY',
+					message:	'Must be a valid date.'
+				}
+			}
+		},
+		video_end_date: {
+			validators: {
+				notEmpty: {
+					message:	'Date is required.'
+				},
+				date: {
+					format:		'MM-DD-YYYY',
+					message:	'Must be a valid date.'
+				}
+			}
+		}
+	}
+});
+
+});
+</script>
+
+	</head>
+
+
+	<body>
+<div class="pure-g" style="margin-left: 20px; margin-right: 20px;">
+<div class="pure-u-1-1">
+<h1>TimeLapse</h1>
+
+
+<!-- connection warning message -->
+<div id="connection_warn" style="text-align: center; width: 800px; padding: 10px; margin-right: auto; margin-left: auto; background-color: orange; color: white; display: none;" onclick="hidWarn()">
+	<h1>Error communicating with server.  Please check to make sure you are still connected to the network.</h1>
+</div>
+
+
+<!-- Video Generation Form -->
+<form class="pure-form pure-form-aligned" id="timelapseGenerator" method="post" action="videoGenerate.php">
+	<fieldset>
+		<legend style="font-size: 2em; font-weight: bold;"><i class="fa fa-file-video-o" aria-hidden="true"></i> Generate TimeLapse</legend>
+
+		<!-- Start Date/Time -->
+		<div class="pure-control-group" id="video_date_start">
+			<label for="video_start_date">Start Date</label>
+			<input name="video_start_date" id="video_start_date" type="text" />
+			<span class="pure-form-message-inline"></span>
+		</div>
+		<div class="pure-control-group" id="video_time_start">
+			<label for="video_start_time">Start Time</label>
+			<input name="video_start_time" id="video_start_time" type="text" />
+			<span class="pure-form-message-inline"></span>
+		</div>
+		<div class="pure-controls">
+			<img height="240" width="320" border="1" />
+		</div>
+
+		<!-- End Date/Time -->
+		<div class="pure-control-group" id="video_date_end">
+			<label for="video_end_date">End Date</label>
+			<input name="video_end_date" id="video_end_date" type="text" />
+			<span class="pure-form-message-inline"></span>
+		</div>
+		<div class="pure-control-group" id="video_time_end">
+			<label for="video_end_time">End Time</label>
+			<input name="video_end_time" id="video_end_time" type="text" />
+			<span class="pure-form-message-inline"></span>
+		</div>
+		<div class="pure-controls">
+			<img height="240" width="320" border="1" />
+		</div>
+
+
+		<hr style="clear: both;" />
+		<div class="pure-controls">
+			<input type="hidden" name="generate" value="generate" />
+			<button type="submit" class="pure-button bure-button-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> Generate Video</button>
+			<span class="pure-form-message-inline">Click the "Generate Video" button to generate a time-lapse video based on the settings above.</span>
+		</div>
+	</fieldset>
+</form>
+
+
+</div>
+</div>
+</body>
+</html>
