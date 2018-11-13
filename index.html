@@ -208,7 +208,7 @@ $('#timelapseGenerator').formValidation({
 			}
 		}
 	}
-});
+}).formValidation('validate');
 
 });
 </script>
@@ -233,7 +233,22 @@ $('#timelapseGenerator').formValidation({
 	<fieldset>
 		<legend style="font-size: 2em; font-weight: bold;"><i class="fa fa-file-video-o" aria-hidden="true"></i> Generate TimeLapse</legend>
 
+		<!-- General Video Settings -->
+		<div class="pure-control-group" id="video_settings">
+			<label for="video_speed">Frame Rate</label>
+			<select>
+				<option>1/10</option>
+				<option>1/20</option>
+				<option>1/30</option>
+				<option>1/40</option>
+				<option>1/50</option>
+			</select>
+			<label for="video_caption">Caption</label>
+			<input name="video_caption" id="video_caption" type="text" class="pure-u-1-2" />
+		</div>
+
 		<!-- Start Date/Time -->
+		<div style="float: left;" class="pure-u-1-2">
 		<div class="pure-control-group" id="video_date_start">
 			<label for="video_start_date">Start Date</label>
 			<input name="video_start_date" id="video_start_date" type="text" />
@@ -244,11 +259,10 @@ $('#timelapseGenerator').formValidation({
 			<input name="video_start_time" id="video_start_time" type="text" />
 			<span class="pure-form-message-inline"></span>
 		</div>
-		<div class="pure-controls">
-			<img height="240" width="320" border="1" />
 		</div>
 
 		<!-- End Date/Time -->
+		<div style="float: left;" class="pure-u-1-2">
 		<div class="pure-control-group" id="video_date_end">
 			<label for="video_end_date">End Date</label>
 			<input name="video_end_date" id="video_end_date" type="text" />
@@ -259,10 +273,16 @@ $('#timelapseGenerator').formValidation({
 			<input name="video_end_time" id="video_end_time" type="text" />
 			<span class="pure-form-message-inline"></span>
 		</div>
-		<div class="pure-controls">
-			<img height="240" width="320" border="1" />
 		</div>
 
+		<!-- Preview Images -->
+		<div class="pure-u-1-1" style="text-align: center;">
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		</div>
 
 		<hr style="clear: both;" />
 		<div class="pure-controls">
