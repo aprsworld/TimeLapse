@@ -95,6 +95,10 @@ function month_printable(year, month) {
 	return "" + year + "-" + pad_zero(2, "" + month);
 }
 
+function onSelect(dateText, obj) {
+	$('#timelapseGenerator').formValidation('revalidateField', obj.id);
+}
+
 function onChangeMonthYear(year, month, obj) {
 	var $cal = $(this);
 	var date = month_printable(year, month);
@@ -157,7 +161,8 @@ $('#video_start_date').datepicker({
 	changeMonth: true,
 	maxDate: "+0d",
 	onChangeMonthYear: onChangeMonthYear,
-	beforeShowDay: beforeShowDay
+	beforeShowDay: beforeShowDay,
+	onSelect: onSelect
 }).datepicker("setDate", dateStart);;
 $('#video_end_date').datepicker({
 	dateFormat: 'mm-dd-yy',
@@ -165,7 +170,8 @@ $('#video_end_date').datepicker({
 	changeMonth: true,
 	maxDate: "+0d",
 	onChangeMonthYear: onChangeMonthYear,
-	beforeShowDay: beforeShowDay
+	beforeShowDay: beforeShowDay,
+	onSelect: onSelect
 }).datepicker("setDate",new Date());;
 
 // form validator hook
