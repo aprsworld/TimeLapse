@@ -83,7 +83,7 @@ button {
 
 <script type="text/javascript">
 $( function() {
-var camera =" A4872";
+var camera ="A4872";
 var cal = {};
 
 function pad_zero(size, s) {
@@ -96,7 +96,7 @@ function month_printable(year, month) {
 }
 
 function onChangeMonthYear(year, month, obj) {
-	var $cal = $(obj);
+	var $cal = $(this);
 	var date = month_printable(year, month);
 	if (!cal[date]) {
 		$.ajax({
