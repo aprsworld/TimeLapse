@@ -21,8 +21,8 @@
 		<script type="text/javascript" src="res/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 
 		<!-- formValidation plugin and the class supports validating Pure form -->
-		<script type="text/javascript" src="res/formvalidation/js/formValidation.min.js"></script>
-		<script type="text/javascript" src="res/formvalidation/js/framework/pure.min.js"></script>
+		<script type="text/javascript" src="res/formvalidation/js/formValidation.js"></script>
+		<script type="text/javascript" src="res/formvalidation/js/framework/pure.js"></script>
 
 		<!-- FontAwesome for icons and spinners -->
 		<link rel="stylesheet" href="res/font-awesome-4.7.0/css/font-awesome.min.css" />
@@ -208,7 +208,14 @@ $('#timelapseGenerator').formValidation({
 			}
 		}
 	}
-}).formValidation('validate');
+}).formValidation('validate')
+.on('success.validator.fv', function() {
+	// Show Preview Images
+})
+.on('err.validator.fv', function() {
+	var $el = $('#timelapseGenerator');
+	// If Times are valid, show preview...
+});
 
 });
 </script>
