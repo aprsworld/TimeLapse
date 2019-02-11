@@ -156,7 +156,7 @@ function beforeShowDay (date) {
 var dateStart = new Date();
 dateStart.setDate(1);
 $('#video_start_date').datepicker({
-	dateFormat: "mm-dd-yy",
+	dateFormat: "mm/dd/yy",
 	changeYear: true,
 	changeMonth: true,
 	maxDate: "+0d",
@@ -165,7 +165,7 @@ $('#video_start_date').datepicker({
 	onSelect: onSelect
 }).datepicker("setDate", dateStart);;
 $('#video_end_date').datepicker({
-	dateFormat: 'mm-dd-yy',
+	dateFormat: 'mm/dd/yy',
 	changeYear: true,
 	changeMonth: true,
 	maxDate: "+0d",
@@ -191,7 +191,7 @@ $('#timelapseGenerator').formValidation({
 					message:	'Date is required.'
 				},
 				date: {
-					format:		'MM-DD-YYYY',
+					format:		'MM/DD/YYYY',
 					message:	'Must be a valid date.'
 				}
 			}
@@ -202,7 +202,7 @@ $('#timelapseGenerator').formValidation({
 					message:	'Date is required.'
 				},
 				date: {
-					format:		'MM-DD-YYYY',
+					format:		'MM/DD/YYYY',
 					message:	'Must be a valid date.'
 				}
 			}
