@@ -2279,7 +2279,10 @@ if (typeof jQuery === 'undefined') {
     // Plugin definition
     $.fn.formValidation = function(option) {
         var params = arguments;
-        return this.each(function() {
+// DAR
+//        return this.each(function() {
+	function foo() {
+// !DAR
             var $this   = $(this),
                 data    = $this.data('formValidation'),
                 options = 'object' === typeof option && option;
@@ -2300,7 +2303,15 @@ if (typeof jQuery === 'undefined') {
             if ('string' === typeof option) {
                 data[option].apply(data, Array.prototype.slice.call(params, 1));
             }
-        });
+// DAR
+//        });
+	}
+	if (this.length != 1) {
+		return this.each(foo);
+	} else {
+		return foo();
+	}
+// !DAR
     };
 
     $.fn.formValidation.Constructor = FormValidation.Base;
