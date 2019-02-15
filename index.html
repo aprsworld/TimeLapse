@@ -21,8 +21,8 @@
 		<script type="text/javascript" src="res/jquery-ui-1.12.1/jquery-ui.min.js"></script>
 
 		<!-- formValidation plugin and the class supports validating Pure form -->
-		<script type="text/javascript" src="res/formvalidation/js/formValidation.min.js"></script>
-		<script type="text/javascript" src="res/formvalidation/js/framework/pure.min.js"></script>
+		<script type="text/javascript" src="res/formvalidation/js/formValidation.js"></script>
+		<script type="text/javascript" src="res/formvalidation/js/framework/pure.js"></script>
 
 		<!-- FontAwesome for icons and spinners -->
 		<link rel="stylesheet" href="res/font-awesome-4.7.0/css/font-awesome.min.css" />
@@ -156,7 +156,7 @@ function beforeShowDay (date) {
 var dateStart = new Date();
 dateStart.setDate(1);
 $('#video_start_date').datepicker({
-	dateFormat: "mm-dd-yy",
+	dateFormat: "mm/dd/yy",
 	changeYear: true,
 	changeMonth: true,
 	maxDate: "+0d",
@@ -165,7 +165,7 @@ $('#video_start_date').datepicker({
 	onSelect: onSelect
 }).datepicker("setDate", dateStart);;
 $('#video_end_date').datepicker({
-	dateFormat: 'mm-dd-yy',
+	dateFormat: 'mm/dd/yy',
 	changeYear: true,
 	changeMonth: true,
 	maxDate: "+0d",
@@ -191,7 +191,7 @@ $('#timelapseGenerator').formValidation({
 					message:	'Date is required.'
 				},
 				date: {
-					format:		'MM-DD-YYYY',
+					format:		'MM/DD/YYYY',
 					message:	'Must be a valid date.'
 				}
 			}
@@ -202,12 +202,19 @@ $('#timelapseGenerator').formValidation({
 					message:	'Date is required.'
 				},
 				date: {
-					format:		'MM-DD-YYYY',
+					format:		'MM/DD/YYYY',
 					message:	'Must be a valid date.'
 				}
 			}
 		}
 	}
+}).formValidation('validate')
+.on('success.validator.fv', function() {
+	// Show Preview Images
+})
+.on('err.validator.fv', function() {
+	var $el = $('#timelapseGenerator');
+	// If Times are valid, show preview...
 });
 
 });
@@ -233,7 +240,23 @@ $('#timelapseGenerator').formValidation({
 	<fieldset>
 		<legend style="font-size: 2em; font-weight: bold;"><i class="fa fa-file-video-o" aria-hidden="true"></i> Generate TimeLapse</legend>
 
+		<!-- General Video Settings -->
+		<div class="pure-control-group" id="video_settings">
+			<label for="video_speed">Frame Rate</label>
+			<select>
+				<option>1/10</option>
+				<option>1/20</option>
+				<option>1/30</option>
+				<option>1/40</option>
+				<option>1/50</option>
+				<option>
+			</select>
+			<label for="video_title">Title</label>
+			<input name="video_title" id="video_title" type="text" class="pure-u-1-2" />
+		</div>
+
 		<!-- Start Date/Time -->
+		<div style="float: left;" class="pure-u-1-2">
 		<div class="pure-control-group" id="video_date_start">
 			<label for="video_start_date">Start Date</label>
 			<input name="video_start_date" id="video_start_date" type="text" />
@@ -244,11 +267,10 @@ $('#timelapseGenerator').formValidation({
 			<input name="video_start_time" id="video_start_time" type="text" />
 			<span class="pure-form-message-inline"></span>
 		</div>
-		<div class="pure-controls">
-			<img height="240" width="320" border="1" />
 		</div>
 
 		<!-- End Date/Time -->
+		<div style="float: left;" class="pure-u-1-2">
 		<div class="pure-control-group" id="video_date_end">
 			<label for="video_end_date">End Date</label>
 			<input name="video_end_date" id="video_end_date" type="text" />
@@ -259,10 +281,16 @@ $('#timelapseGenerator').formValidation({
 			<input name="video_end_time" id="video_end_time" type="text" />
 			<span class="pure-form-message-inline"></span>
 		</div>
-		<div class="pure-controls">
-			<img height="240" width="320" border="1" />
 		</div>
 
+		<!-- Preview Images -->
+		<div class="pure-u-1-1" style="text-align: center;">
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		<img height="128" width="170" />
+		</div>
 
 		<hr style="clear: both;" />
 		<div class="pure-controls">
